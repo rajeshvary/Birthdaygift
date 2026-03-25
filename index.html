@@ -1,27 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Birthday Gift</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selene's Birthday Surprise ✨❤️</title>
+<style>
+body {
+    margin:0;
+    background:black;
+    overflow:hidden;
+    font-family:'Comic Sans MS', cursive, sans-serif;
+    color:red;
+    text-align:center;
+    position:relative;
+}
+canvas#stars { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; }
+
+.glitterText {
+    font-size:2em;
+    color:red;
+    margin-top:50px;
+    display:inline-block;
+    white-space:pre-wrap;
+}
+
+.section { margin:50px auto; text-align:center; }
+
+.cakeContainer { margin-top:30px; cursor:pointer; display:none; }
+.cake { font-size:6em; animation:bounce 1s infinite alternate; }
+@keyframes bounce { from {transform:translateY(0);} to {transform:translateY(-15px);} }
+
+#prompt { font-size:1.5em; color:pink; margin-top:10px; display:none; }
+
+#slices { display:none; margin-top:20px; }
+.slice { font-size:3em; margin:10px; cursor:pointer; display:inline-block; }
+
+#photoSlideshow { display:none; margin-top:50px; position:relative; height:220px; }
+.photo { 
+    width:200px; height:200px; border-radius:15px; margin:10px; border:2px solid red; object-fit:cover; 
+    opacity:0; transition: opacity 1s; position:absolute; left:50%; transform:translateX(-50%);
+}
+.photo.active { opacity:1; }
+
+#finalMessage { display:none; font-size:2em; margin-top:50px; color:pink; }
+
+.fireworks { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:-1; }
+button { background: pink; border:none; border-radius:10px; color:black; }
+</style>
 </head>
 <body>
-    <h1>Welcome to the Birthday Gift Page</h1>
-    <audio id="background-music" controls>
-        <source src="music.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-    <script>
-        const audio = document.getElementById('background-music');
-        
-        // Try to play on page load
-        audio.play().catch(function(error) {
-            // If autoplay is blocked, play on first user interaction
-            document.addEventListener('click', function playAudio() {
-                audio.play();
-                document.removeEventListener('click', playAudio);
-            }, { once: true });
+
+<canvas id="stars"></canvas>
+
+<div id="textContainer" class="glitterText"></div>
+
+<div class="section">
+    <div id="cakeSection" class="cakeContainer">
+        <div class="cake">🎂</div>
+        <div id="prompt">Touch the cake to cut it!</div>
+    </div>
+    <div id="slices">
+        <span class="slice">🍰</span>
+        <span class="slice">🍰</span>
+        <span class="slice">🍰</span>
+        <span class="slice">🍰</span>
+        <span class="slice">🍰</span>
+    </div>
+</div>
+
+<div id="photoSlideshow" class="section">
+    <img src="photo1.jpg" class="photo active">
+    <img src="photo2.jpg" class="photo">
+    <img src="photo3.jpg" class="photo">
+    <img src="photo4.jpg" class="photo">
+    <img src="photo5.jpg" class="photo">
+    <img src="photo6.jpg" class="photo">
+    <img src="photo7.jpg" class="photo">
+    <img src="photo8.jpg" class="photo">
+    <img src="photo9.jpg" class="photo">
+    <img src="photo10.jpg" class="photo">
+</div>
+
+<div id="finalMessage"></div>
+
+audio id="bgMusic" loop controls>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<canvas id="fireworks" class="fireworks"></canvas>
+
+<script>
+// Glitter Text Animation
+const message = "Heyy Selene ❤️✨🫂\nHow are you Chloww?!\nI hope you are doing sad without mehh 😉😏😁\nI'm here for your birthday surprise chloww 🫢";
+const container = document.getElementById('textContainer');
+let index = 0;
+function showText() {
+    if(index<message.length){
+        container.innerHTML += message[index];
+        index++;
+        setTimeout(showText, 80);
+    } else {
+        document.getElementById('cakeSection').style.display='block';
+        document.getElementById('prompt').style.display='block';
+    }
+}
+showText();
+
+// Music
+const music = document.getElementById('bgMusic');
+
+// Cake click
+document.querySelector('.cakeContainer').onclick = function() {
+    this.style.display = 'none';
+    document.getElementById('slices').style.display = 'block';
+    document.getElementById('prompt').innerText = "Touch each slice and see the magic 🪄✨";
+    music.play().catch(err=>console.log('Music blocked'));
+};
+
+// Floating messages following cursor
+function showFloatingMessage(text){
+    const msg = document.createElement('div');
+    msg.className='glitterText';
+    msg.style.position='absolute';
+    msg.style.color='pink';
+    msg.style.fontSize='1.5em';
+    msg.style.left=(window.innerWidth/2-150 + Math.random()*300)+'px';
+    msg.style.top=(window.innerHeight/2 + Math.random()*100)+'px';
+    msg.innerText=text;
+    document.body.appendChild(msg);
+
+    let interval = setInterval(()=>{
+        msg.style.left = currentMouse.x + 'px';
+        msg.style.top = currentMouse.y + 'px';
+    },16);
+    setTimeout(()=>{clearInterval(interval); msg.remove();},2500);
+}
+let currentMouse={x:window.innerWidth/2, y:window.innerHeight/2};
+document.addEventListener('mousemove', e=>{currentMouse.x=e.clientX; currentMouse.y=e.clientY; });
+
+// Slice messages
+const sliceMessages = [
+    "Slice 1: For my gorgeous Selene 😘",
+    "Slice 2: You melt my heart 💖",
+    "Slice 3: Your smile is my weakness 😏",
+    "Slice 4: Every moment with you is magic ✨",
+    "Slice 5: You've captured my soul ❤️🔥"
+];
+let slicesClicked = 0;
+const photos = document.querySelectorAll('#photoSlideshow .photo');
+
+document.querySelectorAll('.slice').forEach((slice,i)=>{
+    slice.onclick = function(){
+        slice.style.transform="scale(1.5) rotate(15deg)";
+        showFloatingMessage(sliceMessages[i]);
+        slicesClicked++;
+        if(slicesClicked===5){
+            document.getElementById('photoSlideshow').style.display='block';
+            startSlideshow();
+        }
+    };
+});
+
+// Photo slideshow → final birthday text + replay
+let slideshowIndex = 0;
+function startSlideshow(){
+    if(slideshowIndex < photos.length){
+        photos.forEach(p => p.classList.remove('active'));
+        photos[slideshowIndex].classList.add('active');
+        slideshowIndex++;
+        setTimeout(startSlideshow, 2000);
+    } else {
+        document.getElementById('photoSlideshow').style.display='none';
+        const finalText = `
+Wishing you a very Happy Birthday Selene ❤️✨🎀
+With lots of luv and kisses
+By Lucifer ✨
+        `;
+        const finalMessage = document.getElementById('finalMessage');
+        finalMessage.innerText = finalText;
+        finalMessage.style.display = 'block';
+
+        // Replay button
+        const replayBtn = document.createElement('button');
+        replayBtn.innerText = "🎉 Replay Surprise 🎉";
+        replayBtn.style.fontSize = "1.5em";
+        replayBtn.style.marginTop = "30px";
+        replayBtn.style.padding = "10px 20px";
+        replayBtn.style.cursor = "pointer";
+        finalMessage.appendChild(document.createElement('br'));
+        finalMessage.appendChild(replayBtn);
+
+        replayBtn.onclick = () => location.reload(); // restart
+
+        startFireworks();
+    }
+}
+
+// Starry Background
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+let stars=[];
+for(let i=0;i<300;i++){
+    stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*1.5});
+}
+function drawStars(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='white';
+    stars.forEach(s=>{
+        ctx.beginPath();
+        ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fill();
+    });
+    requestAnimationFrame(drawStars);
+}
+drawStars();
+
+// Fireworks
+const fireCanvas=document.getElementById('fireworks');
+const fctx=fireCanvas.getContext('2d');
+fireCanvas.width=window.innerWidth; fireCanvas.height=window.innerHeight;
+let particles=[];
+function createFirework(){
+    for(let i=0;i<30;i++){
+        particles.push({
+            x:Math.random()*window.innerWidth,
+            y:Math.random()*window.innerHeight,
+            dx:(Math.random()-0.5)*5,
+            dy:(Math.random()-0.5)*5,
+            color:`hsl(${Math.random()*360},100%,50%)`,
+            life:50
         });
-    </script>
+    }
+}
+function animateFireworks(){
+    fctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+    particles.forEach((p,i)=>{
+        fctx.fillStyle=p.color;
+        fctx.beginPath();
+        fctx.arc(p.x,p.y,3,0,Math.PI*2);
+        fctx.fill();
+        p.x+=p.dx; p.y+=p.dy; p.life--;
+        if(p.life<=0) particles.splice(i,1);
+    });
+    requestAnimationFrame(animateFireworks);
+}
+function startFireworks(){ setInterval(createFirework,300); animateFireworks(); }
+</script>
 </body>
 </html>
