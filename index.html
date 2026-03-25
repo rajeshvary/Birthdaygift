@@ -45,7 +45,7 @@ canvas#stars { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-
 #finalMessage { display:none; font-size:2em; margin-top:50px; color:pink; }
 
 .fireworks { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:-1; }
-button { background: pink; border:none; border-radius:10px; color:black; }
+button { background: pink; border:none; border-radius:10px; color:black; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -83,7 +83,7 @@ button { background: pink; border:none; border-radius:10px; color:black; }
 
 <div id="finalMessage"></div>
 
-audio id="bgMusic" loop controls>
+<audio id="bgMusic" loop>
     <source src="music.mp3" type="audio/mpeg">
 </audio>
 
@@ -106,15 +106,18 @@ function showText() {
 }
 showText();
 
-// Music
+// Music plays on first click anywhere (required by browser autoplay policy)
 const music = document.getElementById('bgMusic');
+document.body.addEventListener('click', function playOnce() {
+    music.play().catch(err => console.log('Music blocked until first click'));
+    document.body.removeEventListener('click', playOnce);
+});
 
 // Cake click
 document.querySelector('.cakeContainer').onclick = function() {
     this.style.display = 'none';
     document.getElementById('slices').style.display = 'block';
     document.getElementById('prompt').innerText = "Touch each slice and see the magic 🪄✨";
-    music.play().catch(err=>console.log('Music blocked'));
 };
 
 // Floating messages following cursor
@@ -144,7 +147,7 @@ const sliceMessages = [
     "Slice 2: You melt my heart 💖",
     "Slice 3: Your smile is my weakness 😏",
     "Slice 4: Every moment with you is magic ✨",
-    "Slice 5: You've captured my soul ❤️🔥"
+    "Slice 5: You’ve captured my soul ❤️🔥"
 ];
 let slicesClicked = 0;
 const photos = document.querySelectorAll('#photoSlideshow .photo');
